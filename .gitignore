@@ -1,0 +1,188 @@
+import sqlite3
+from datetime import datetime, date, time
+
+class storage(object):
+    def __init__(self, path):
+        self.connection = sqlite3.connect(path)
+        self.cursor = self.connection.cursor()
+
+    def createTable(self):
+        self.cursor.execute('''CREATE TABLE VEGETABLES(id INTEGER PRIMARY KEY, Country TEXT, name TEXT, type TEXT, color INTEGER, taste INTEGER, popularity INTEGER, WIDTH INTEGER, Weight REAL, Price REAL)''')
+        self.connection.commit()
+
+    def addvegetable(self, Country, name, type, color, taste, popularity, Width , Weight, Price):
+        self.cursor.execute('''INSERT INTO VEGETABLES (Country, name, type, color, taste, popularity, Width , Weight, Price)VALUES (?,?,?,?,?,?,?,?,?)''', (Country, name, type, color, taste, popularity, Width , Weight, Price))
+        self.connection.commit()
+    def selectAll(self):
+        self.cursor.execute('SELECT * FROM VEGETABLES')
+        res = self.cursor.fetchall()
+        return res
+    def update_price_vegetable(self, newprice, vegetable_id):
+        self.cursor.execute('''UPDATE VEGETABLES SET Price = ? WHERE id = ?''',(newprice,vegetable_id))
+        self.connection.commit()
+    def update_purpose_vegetable(self, newpurpose, vegetable_id):
+        self.cursor.execute('''UPDATE VEGETABLES SET Purpose = ? WHERE id = ?''',(newpurpose,vegetable_id))
+        self.connection.commit()
+    def deletevegetable(self, vegetable_id):
+        self.cursor.execute('''DELETE FROM VEGETABLES WHERE id = ?''',(vegetable_id,))
+        self.connection.commit()
+    def add_column(self):
+        self.cursor.execute('''ALTER TABLE VEGETABLES ADD Purpose CHAR [20]''')
+        self.connection.commit()
+    def remove_column(self):
+        self.cursor.execute('''CREATE TABLE new_vegetables
+    (id INTEGER PRIMARY KEY, Country TEXT, name TEXT, type TEXT, color INTEGER, taste INTEGER, popularity INTEGER, Width INTEGER, Weight REAL, Price REAL)''')
+        self.cursor.execute('''INSERT INTO new_vegetables (Country, name, type, color, taste, popularity, Width , Weight, Price)
+SELECT Country, name, type, color, taste, popularity, Width , Weight, Price FROM VEGETABLES''')
+        self.cursor.execute('''DROP TABLE VEGETABLES''')
+        self.cursor.execute('''CREATE TABLE VEGETABLES
+(id INTEGER PRIMARY KEY, Country TEXT, name TEXT, type TEXT, color INTEGER, taste INTEGER, popularity INTEGER, WIDTH INTEGER, Weight REAL, Price REAL)''')
+        self.cursor.execute('''INSERT INTO VEGETABLES (Country, name, type, color, taste, popularity, Width , Weight, Price)
+SELECT Country, name, type, color, taste, popularity, Width , Weight, Price FROM new_vegetables''')
+        self.cursor.execute('''DROP TABLE new_vegetables''')
+        self.connection.commit()
+
+def main():
+    st = storage(':memory:')
+    st.createTable()
+    st.addvegetable('Apple','China','A','red','sweet',40,56,4, 50)
+    st.addvegetable('banana', 'China', 'F', 'yellow','sweet',7, 56, 215,55)
+    st.addvegetable('tomato', 'China', 'G', 'red','sweet', 39,269, 27, 10)
+    st.addvegetable('pepper', 'Russia', 'A34', 'red','spicy', 22,259, 218, 10)
+    st.addvegetable('banana', 'Russia', 'D', 'green','sweet', 32,251, 23, 600)
+    st.addvegetable('Apple', 'Russia', 'T', 'green', 'sweet', 24,262, 24, 20)
+    st.addvegetable('Apple', 'China', 'G7', 'yellow', 'sweet', 37,278, 29, 100)
+    st.addvegetable('pumpkin', 'China', '1D5', 'orange', 'sweet', 28,260, 35,130)
+    st.addvegetable('pepper', 'Japan', 'FG', 'green', 'spicy', 25,259, 22, 176)
+    st.addvegetable('pepper', 'Japan', 'HB', 'green', 'spicy', 28,286, 3, 120)
+    st.addvegetable('potato', 'Russia', 'DT', 'red', 'sweet', 9,177, 117, 100)
+    st.addvegetable('banana', 'Russia', 'XEA', 'green', 'sweet', 30,254, 219, 169)
+    st.addvegetable('banana', 'Russia', 'DF', 'yellow', 'sweet', 22,380, 24, 100)
+    st.addvegetable('tomato', 'China', 'FB', 'yellow', 'sweet',38,250, 24, 300)
+    st.addvegetable('pepper', 'Russia', 'FHJ', 'red', 'spicy', 22,259, 218, 1900)
+    st.addvegetable('pepper', 'China', 'DGHJ', 'green', 'spicy', 30,270, 264, 180)
+    st.addvegetable('pepper', 'Russia', 'DFDFC', 'yellow', 'spicyt', 24,255, 229,400)
+    st.addvegetable('banana', 'Russia', 'DFG56', 'blue', 'sweet', 25,457, 380, 22)
+    st.addvegetable('banana', 'Russia', 'FHH', 'red', 380, 16,258, 2.4,19800)
+    st.addvegetable('pepper', 'Russia', 'JG', 'green', 'spicy', 28,269, 3.29,17500)
+    result = st.selectAll()
+
+
+
+   
+
+    listTitle = ['id', 'Name', 'Country', 'Type','Color', 'Taste', 'Popularity', 'Width', 'Weight','Price']
+    print('\n','----------------------------------------------------------------------------------------------------------------------------------')
+    print('|', end = "")
+    for k in range(10):
+        print('%-12s|' %(listTitle[k]), end = "")
+
+    for i in result:
+        print('\n','----------------------------------------------------------------------------------------------------------------------------------')
+        print('|',end = "")
+        for j in i:
+            print('%-12s|' %j, end = "")
+    print('\n','----------------------------------------------------------------------------------------------------------------------------------')
+    print('\n','\n')
+
+
+    st.update_price_vegetable(0,3)
+    st.update_price_vegetable(15,4)
+    result = st.selectAll()
+
+
+
+  
+
+    listTitle = ['id', 'Name', 'Country', 'Type','Color', 'Taste', 'Popularity', 'Width', 'Weight','Price']
+    print('\n','----------------------------------------------------------------------------------------------------------------------------------')
+    print('|', end = "")
+    for k in range(10):
+        print('%-12s|' %(listTitle[k]), end = "")
+
+    for i in result:
+        print('\n','----------------------------------------------------------------------------------------------------------------------------------')
+        print('|',end = "")
+        for j in i:
+            print('%-12s|' %j, end = "")
+    print('\n','----------------------------------------------------------------------------------------------------------------------------------')
+    print('\n','\n')
+
+
+    st.deletevegetable(1)
+    result = st.selectAll()
+
+
+
+
+
+
+    listTitle = ['id', 'Name', 'Country', 'Type','Color', 'Taste', 'Popularity', 'Width', 'Weight','Price']
+    print('\n','----------------------------------------------------------------------------------------------------------------------------------')
+    print('|', end = "")
+    for k in range(10):
+        print('%-12s|' %(listTitle[k]), end = "")
+
+    for i in result:
+        print('\n','----------------------------------------------------------------------------------------------------------------------------------')
+        print('|',end = "")
+        for j in i:
+            print('%-12s|' %j, end = "")
+    print('\n','----------------------------------------------------------------------------------------------------------------------------------')
+    print('\n','\n')
+
+
+
+    st.add_column()
+    st.update_purpose_vegetable('на продажу ', 1)
+    st.update_purpose_vegetable('на продажу ', 2)
+    st.update_purpose_vegetable('потребление', 3)
+    st.update_purpose_vegetable('на продажу ', 4)
+    st.update_purpose_vegetable('потребление', 5)
+    result = st.selectAll()
+
+
+
+
+
+
+    listTitle = ['id', 'Name', 'Country', 'Type','Color', 'Taste', 'Popularity', 'Width', 'Weight','Price', 'Purpose']
+    print('\n','----------------------------------------------------------------------------------------------------------------------------------------------------------')
+    print('|', end = "")
+    for k in range(11):
+        print('%-13s|' %(listTitle[k]), end = "")
+
+    for i in result:
+        print('\n','----------------------------------------------------------------------------------------------------------------------------------------------------------')
+        print('|',end = "")
+        for j in i:
+            print('%-13s|' %j, end = "")
+    print('\n','----------------------------------------------------------------------------------------------------------------------------------------------------------')
+    print('\n','\n')
+
+
+    st.remove_column()
+    result = st.selectAll()
+
+
+
+
+    
+    listTitle = ['id', 'Name', 'Country', 'Type','Color', 'Taste', 'Popularity', 'Width', 'Weight','Price']
+    print('\n','----------------------------------------------------------------------------------------------------------------------------------')
+    print('|', end = "")
+    for k in range(10):
+        print('%-12s|' %(listTitle[k]), end = "")
+
+    for i in result:
+        print('\n','----------------------------------------------------------------------------------------------------------------------------------')
+        print('|',end = "")
+        for j in i:
+            print('%-12s|' %j, end = "")
+    print('\n','----------------------------------------------------------------------------------------------------------------------------------')
+    print('\n','\n')
+
+
+
+if __name__ == '__main__': main()
+
